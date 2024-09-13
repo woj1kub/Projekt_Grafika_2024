@@ -77,6 +77,35 @@ pub fn playerMovement(player: *Player, groundX: f32) void{
         }
 }
 
+pub fn drawPlayerTexture(player: Player, textures: std.AutoHashMap(TextureType, rl.Texture), animationCounter: f32) void {
+    if (player.playerMoving == false) {
+        rl.drawTexturePro(textures.get(TextureType.PlayerIdle).?, rl.Rectangle.init(animationCounter, 0, @as(f32 ,@floatFromInt(player.playerDirection * 32)), 32), rl.Rectangle.init(player.posX, player.poxY, 128, 128), rl.Vector2.init(0, 0), 0, rl.Color.white);
+    }
+    else {
+        rl.drawTexturePro(textures.get(TextureType.PlayerMoving).?, rl.Rectangle.init(animationCounter, 0, @as(f32 ,@floatFromInt(player.playerDirection * 32)), 32), rl.Rectangle.init(player.posX, player.poxY, 128, 128), rl.Vector2.init(0, 0), 0, rl.Color.white);
+    }
+}
+
+pub fn drawGroundTexture(textures: std.AutoHashMap(TextureType, rl.Texture), groundX: f32) void {
+    var i:f32 = 0;
+    while (i < settings.width) {
+        var j:f32 = 0;
+        while (j < 3) {
+            if (@mod(i, settings.width) == 0) { 
+                rl.drawTexturePro(textures.get(TextureType.Terrain).?, rl.Rectangle.init(128-32,16*j,16,16), rl.Rectangle.init(i, groundX + 64 * j, 64, 64), rl.Vector2.init(0, 0), 0, rl.Color.white);
+            } 
+            if (@mod(i, settings.width) != 0 or @mod(i, settings.width-65) != 1) { 
+                rl.drawTexturePro(textures.get(TextureType.Terrain).?, rl.Rectangle.init(128-16,16*j,16,16), rl.Rectangle.init(i, groundX + 64 * j, 64, 64), rl.Vector2.init(0, 0), 0, rl.Color.white);
+            }
+            if (@mod(i, settings.width-65) == 1) { 
+                rl.drawTexturePro(textures.get(TextureType.Terrain).?, rl.Rectangle.init(128+0,16*j,16,16), rl.Rectangle.init(i, groundX + 64 * j, 64, 64), rl.Vector2.init(0, 0), 0, rl.Color.white);
+            }
+            j += 1;
+        }
+        i += 64;
+    }
+}
+
 
 pub fn main() !void {
     // var allocator = std.heap.page_allocator;
@@ -100,36 +129,13 @@ pub fn main() !void {
     while (!rl.windowShouldClose()) {
         rl.beginDrawing();
         rl.clearBackground(rl.Color.light_gray);
-
-        drawBackgroundTexture(textures.get(TextureType.Background).?);
+       
         rl.drawFPS(0, 0);
 
-        // rl.drawTextureRec(player, rl.Rectangle.init(100, 100, 32, 32), rl.Vector2.init(0, 0), rl.Color.white);
-        if (player.playerMoving == false) {
-            rl.drawTexturePro(textures.get(TextureType.PlayerIdle).?, rl.Rectangle.init(animationCounter, 0, @as(f32 ,@floatFromInt(player.playerDirection * 32)), 32), rl.Rectangle.init(player.posX, player.poxY, 128, 128), rl.Vector2.init(0, 0), 0, rl.Color.white);
-        }
-        else {
-            rl.drawTexturePro(textures.get(TextureType.PlayerMoving).?, rl.Rectangle.init(animationCounter, 0, @as(f32 ,@floatFromInt(player.playerDirection * 32)), 32), rl.Rectangle.init(player.posX, player.poxY, 128, 128), rl.Vector2.init(0, 0), 0, rl.Color.white);
-        }
-        
-
-        var i:f32 = 0;
-        while (i < settings.width) {
-            var j:f32 = 0;
-            while (j < 3) {
-                if (@mod(i, settings.width) == 0) { 
-                    rl.drawTexturePro(textures.get(TextureType.Terrain).?, rl.Rectangle.init(128-32,16*j,16,16), rl.Rectangle.init(i, groundX + 64 * j, 64, 64), rl.Vector2.init(0, 0), 0, rl.Color.white);
-                } 
-                if (@mod(i, settings.width) != 0 or @mod(i, settings.width-65) != 1) { 
-                    rl.drawTexturePro(textures.get(TextureType.Terrain).?, rl.Rectangle.init(128-16,16*j,16,16), rl.Rectangle.init(i, groundX + 64 * j, 64, 64), rl.Vector2.init(0, 0), 0, rl.Color.white);
-                }
-                if (@mod(i, settings.width-65) == 1) { 
-                    rl.drawTexturePro(textures.get(TextureType.Terrain).?, rl.Rectangle.init(128+0,16*j,16,16), rl.Rectangle.init(i, groundX + 64 * j, 64, 64), rl.Vector2.init(0, 0), 0, rl.Color.white);
-                }
-                j += 1;
-            }
-            i += 64;
-        }
+        drawBackgroundTexture(textures.get(TextureType.Background).?);
+        drawPlayerTexture(player, textures, animationCounter);
+        drawGroundTexture(textures, groundX);
+        rl.endDrawing();
 
         keyboardInput(&player);
         playerMovement(&player, groundX);
@@ -137,7 +143,7 @@ pub fn main() !void {
 
         if (@mod(fps, 3) == 0) { animationCounter += 32;}
         if (animationCounter > 32 * 11) { animationCounter = 0;}
-        rl.endDrawing();
+        
         fps += 1;
     }
 }
