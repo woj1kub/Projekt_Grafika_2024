@@ -61,6 +61,22 @@ pub fn keyboardInput(player: *Player) void {
         }
 }
 
+pub fn playerMovement(player: *Player, groundX: f32) void{
+        if (player.playerSpeedY < 15 and !player.playerGrounded) {
+            player.playerSpeedY += 2;
+        }
+        player.poxY = player.poxY + player.playerSpeedY;
+
+        if (player.poxY > groundX - 128) {
+            player.playerSpeedY = 0;
+            player.poxY = groundX - 128;
+            player.playerGrounded = true;
+        }
+        else {
+            player.playerGrounded = false;
+        }
+}
+
 
 pub fn main() !void {
     // var allocator = std.heap.page_allocator;
@@ -96,9 +112,6 @@ pub fn main() !void {
             rl.drawTexturePro(textures.get(TextureType.PlayerMoving).?, rl.Rectangle.init(animationCounter, 0, @as(f32 ,@floatFromInt(player.playerDirection * 32)), 32), rl.Rectangle.init(player.posX, player.poxY, 128, 128), rl.Vector2.init(0, 0), 0, rl.Color.white);
         }
         
-        if (@mod(fps, 3) == 0) {
-            animationCounter += 32;
-        }
 
         var i:f32 = 0;
         while (i < settings.width) {
