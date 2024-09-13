@@ -115,29 +115,27 @@ pub fn main() !void {
 
         var i:f32 = 0;
         while (i < settings.width) {
-            rl.drawTexturePro(textures.get(TextureType.Terrain).?, rl.Rectangle.init(128,0,16,16), rl.Rectangle.init(i, groundX, 64, 64), rl.Vector2.init(0, 0), 0, rl.Color.white);
+            var j:f32 = 0;
+            while (j < 3) {
+                if (@mod(i, settings.width) == 0) { 
+                    rl.drawTexturePro(textures.get(TextureType.Terrain).?, rl.Rectangle.init(128-32,16*j,16,16), rl.Rectangle.init(i, groundX + 64 * j, 64, 64), rl.Vector2.init(0, 0), 0, rl.Color.white);
+                } 
+                if (@mod(i, settings.width) != 0 or @mod(i, settings.width-65) != 1) { 
+                    rl.drawTexturePro(textures.get(TextureType.Terrain).?, rl.Rectangle.init(128-16,16*j,16,16), rl.Rectangle.init(i, groundX + 64 * j, 64, 64), rl.Vector2.init(0, 0), 0, rl.Color.white);
+                }
+                if (@mod(i, settings.width-65) == 1) { 
+                    rl.drawTexturePro(textures.get(TextureType.Terrain).?, rl.Rectangle.init(128+0,16*j,16,16), rl.Rectangle.init(i, groundX + 64 * j, 64, 64), rl.Vector2.init(0, 0), 0, rl.Color.white);
+                }
+                j += 1;
+            }
             i += 64;
         }
 
         keyboardInput(&player);
-        
-
-        if (player.playerSpeedY < 15 and !player.playerGrounded) {
-            player.playerSpeedY += 2;
-        }
-        player.poxY = player.poxY + player.playerSpeedY;
-
-        if (player.poxY > groundX - 128) {
-            player.playerSpeedY = 0;
-            player.poxY = groundX - 128;
-            player.playerGrounded = true;
-        }
-        else {
-            player.playerGrounded = false;
-        }
+        playerMovement(&player, groundX);
 
 
-        
+        if (@mod(fps, 3) == 0) { animationCounter += 32;}
         if (animationCounter > 32 * 11) { animationCounter = 0;}
         rl.endDrawing();
         fps += 1;
