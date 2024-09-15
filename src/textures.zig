@@ -6,6 +6,8 @@ pub const TextureType = enum {
     PlayerMoving,
     PlayerIdle,
     Terrain,
+    Start,
+    End
 };
 
 pub fn loadTextures(allocator: std.mem.Allocator) !std.AutoHashMap(TextureType, rl.Texture2D) {
@@ -24,6 +26,12 @@ pub fn loadTextures(allocator: std.mem.Allocator) !std.AutoHashMap(TextureType, 
 
     const terrain_texture = rl.loadTexture("assets\\Terrain\\Terrain (16x16).png");
     try textures.put(TextureType.Terrain, terrain_texture);
+
+    const start_texture = rl.loadTexture("assets\\Items\\Checkpoints\\Checkpoint\\Checkpoint (Flag Idle)(64x64).png");
+    try textures.put(TextureType.Start, start_texture);
+
+    const end_texture = rl.loadTexture("assets\\Items\\Checkpoints\\End\\End (Pressed) (64x64).png");
+    try textures.put(TextureType.End, end_texture);
 
     return textures;
 }

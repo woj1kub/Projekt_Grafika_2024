@@ -18,7 +18,7 @@ pub fn drawBackgroundTexture(bgtexture: rl.Texture2D, settings: Settings) void {
     }
 }
 pub fn drawPlayerTexture(player: Player, textures: std.AutoHashMap(TextureType, rl.Texture), animationCounter: f32) void {
-    rl.drawRectangle(@as(i32, @intFromFloat(player.posX)), @as(i32, @intFromFloat(player.poxY)), 128, 128, rl.Color.black);
+    // rl.drawRectangle(@as(i32, @intFromFloat(player.posX)), @as(i32, @intFromFloat(player.poxY)), 128, 128, rl.Color.black);
 
     if (player.playerMoving == false) {
         rl.drawTexturePro(textures.get(TextureType.PlayerIdle).?, rl.Rectangle.init(animationCounter, 0, @as(f32, @floatFromInt(player.playerDirection * 32)), 32), rl.Rectangle.init(player.posX, player.poxY, 128, 128), rl.Vector2.init(0, 0), 0, rl.Color.white);
@@ -66,15 +66,27 @@ pub fn drawPlatforms(textures: std.AutoHashMap(TextureType, rl.Texture)) void {
     }
 }
 
-pub fn draw(textures: std.AutoHashMap(TextureType, rl.Texture), player: Player, animationCounter: f32, groundX: f32, settings: Settings) void {
+pub fn drawStart(textures: std.AutoHashMap(TextureType, rl.Texture), animationCounter: i32,) void {
+    rl.drawTexturePro(textures.get(TextureType.Start).?, rl.Rectangle.init(@as(f32, @floatFromInt(@mod(animationCounter, 10))) * 64, 0, 64, 64), rl.Rectangle.init(0, 900 - 256, 256, 256), rl.Vector2.init(0, 0), 0, rl.Color.white);
+}
+
+pub fn drawEnd(textures: std.AutoHashMap(TextureType, rl.Texture)) void {
+    rl.drawTexturePro(textures.get(TextureType.End).?, rl.Rectangle.init(0, 0, 64, 64), rl.Rectangle.init(416, 265 - 128, 128, 128), rl.Vector2.init(0, 0), 0, rl.Color.white);
+}
+
+pub fn draw(textures: std.AutoHashMap(TextureType, rl.Texture), player: Player, animationCounter: f32, groundX: f32, settings: Settings, fps: i32) void {
         rl.beginDrawing();
         rl.clearBackground(rl.Color.light_gray);
 
         rl.drawFPS(0, 0);
 
         drawBackgroundTexture(textures.get(TextureType.Background).?, settings);
-        drawPlayerTexture(player, textures, animationCounter);
         drawGroundTexture(textures, groundX, settings);
         drawPlatforms(textures);
+        drawStart(textures, fps);
+        drawEnd(textures);
+
+        drawPlayerTexture(player, textures, animationCounter);
+
         rl.endDrawing();
 }
