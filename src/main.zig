@@ -5,6 +5,7 @@ const TextureType = texturesInc.TextureType;
 const configs = @import("configs.zig");
 const Settings = configs.Settings;
 const Player = configs.Player;
+const draw = @import("draw.zig");
 
 const settings = Settings{
     .height = 1080,
@@ -12,17 +13,7 @@ const settings = Settings{
     .title = "GK_game",
 };
 
-pub fn drawBackgroundTexture(bgtexture: rl.Texture2D) void {
-    var i: i32 = 0;
-    while (i < settings.width) {
-        var j: i32 = 0;
-        while (j < settings.height) {
-            rl.drawTexture(bgtexture, i, j, rl.Color.white);
-            j += 64;
-        }
-        i += 64;
-    }
-}
+var onPlatform: bool = false;
 
 pub fn keyboardInput(player: *Player) void {
     if (rl.isKeyDown(rl.KeyboardKey.key_d)) {
@@ -110,16 +101,8 @@ pub fn main() !void {
     const groundX: i32 = 900;
     var fps: i32 = 0;
     while (!rl.windowShouldClose()) {
-        rl.beginDrawing();
-        rl.clearBackground(rl.Color.light_gray);
 
-        rl.drawFPS(0, 0);
-
-        drawBackgroundTexture(textures.get(TextureType.Background).?);
-        drawPlayerTexture(player, textures, animationCounter);
-        drawGroundTexture(textures, groundX);
-        rl.endDrawing();
-
+        draw.draw(textures, player, animationCounter, groundX, settings);
         keyboardInput(&player);
         playerMovement(&player, groundX);
 
